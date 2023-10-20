@@ -1,6 +1,3 @@
-#/bin/bash
-
-name: UPSERT workflow
 on: push
   # workflow_dispatch:
   #   inputs:
