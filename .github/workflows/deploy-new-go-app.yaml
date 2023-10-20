@@ -13,7 +13,9 @@ jobs:
   testjob:
     runs-on: ubuntu-latest
     steps:
-      - name: "hello-world"
-        run: echo "hello-world"
+      - name: "create app repository"
+        run: |
+          gh repo create ${{ inputs.application_name }} --public -p go-template
+
       
 
