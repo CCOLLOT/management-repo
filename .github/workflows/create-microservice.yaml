@@ -1,0 +1,57 @@
+on:
+  workflow_dispatch:
+    inputs:
+      application_name:
+        required: true
+        description: name of the app to create
+        type: string
+      language:
+        description: language of the app to create
+        type: string
+      port_payload:
+        required: false
+        description: "Port's payload, including details for who triggered the action an general context (blueprint, run id, etc...)"
+        type: string
+jobs:
+  bootstrap-app-repository:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "create app repository"
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          git config --global user.email "management-repo@github.com"
+          git config --global user.name "Management Bot"
+          git config --global url.https://${{ secrets.GH_TOKEN }}@github.com/.insteadOf https://github.com/
+          gh repo create ${{ inputs.application_name }} --public -p go-template -c 
+          cd ${{ inputs.application_name }}
+          find . -type f -exec sed -i "s/appnametochange/${{ inputs.application_name }}/g" {} \;
+          git add .
+          git commit -m "init app repository"
+          git tag v0.1.0 HEAD -m "init repo setup"
+          git push origin --atomic main v0.1.0
+          while [[ $status_code -ne  200 ]] ;
+          do
+            status_code=$(curl -s -o /dev/null -I -w "%{http_code}" https://github.com/CCOLLOT/${{ inputs.application_name }}/pkgs/container/${{ inputs.application_name }})
+            echo "waiting for first release..."
+            sleep 5
+          done
+  create-argocd-application:
+    needs: bootstrap-app-repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: "create ArgoCD application"
+        run: |
+          mkdir -p argocd/applications 
+          cp argocd/templates/default.yaml argocd/applications/${{ inputs.application_name }}.yaml
+          sed -i 's/appnametochange/${{ inputs.application_name }}/g' argocd/applications/${{ inputs.application_name }}.yaml
+          git config --global user.email "management-repo@github.com"
+          git config --global user.name "Management Bot"
+          git add .
+          git commit -m "init app ${{ inputs.application_name }}"
+          git push origin ${{ github.ref }}
