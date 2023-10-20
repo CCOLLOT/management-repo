@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "create app repository"
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           gh repo create ${{ inputs.application_name }} --public -p go-template
-
-      
 
