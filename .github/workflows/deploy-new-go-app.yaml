@@ -5,17 +5,22 @@ on:
         required: true
         description: name of the go app to create
         type: string
-      # port_payload:
-      #   required: true
-      #   description: "Port's payload, including details for who triggered the action an general context (blueprint, run id, etc...)"
-      #   type: string
+      port_payload:
+        required: true
+        description: "Port's payload, including details for who triggered the action an general context (blueprint, run id, etc...)"
+        type: string
 jobs:
-  testjob:
+  create-app-repository:
     runs-on: ubuntu-latest
     steps:
       - name: "create app repository"
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          gh repo create ${{ inputs.application_name }} --public -p go-template
-
+          gh repo create ${{ inputs.application_name }} --public -p go-template -c 
+          cd ${{ inputs.application_name }}
+          sed -i 's/appnametobechanged/${{ inputs.application_name }}/g' *.* 
+          git add .
+          git commit -m "init app repository"
+          git tag init HEAD -m "init repo setup"
+          git push origin main
