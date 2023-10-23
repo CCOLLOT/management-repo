@@ -62,6 +62,7 @@ When including transitive dependencies (an ArgoCD app or a Github Repo are thems
 
 We define a self-service action on the `Microservice` entity to create a new microservice:
 ![Screenshot](docs/self-service-create-microservice.png)
+
 This self-service action basically triggers the `create-microservice.yaml` github workflow hosted in the management repository, providing as well input variables and the complete Port payload. 
 
 When triggering this action, the developer is asked to provide the service's name and the programming language.
@@ -85,11 +86,12 @@ When triggering this action, the developer is asked to provide the service's nam
             + *NOTE: for simplicity, the helm chart is defined in the Go-Template repository, but ideally we would deploy the chart to a proper chart repository before referencing in the the Go Template. Also, we could have put the k8s-related config in a dedicated repository to keep a better separation of concerns between k8s-related and source-code-related changes*
 
 + **New Microservice Repo** ([link to repo](https://github.com/CCOLLOT/coop-app-1))
-    +  Created on the fly by the `create-microservice.yaml` github workflow from the go-template repository, injecting the application's name into all template files.
+    + Created on the fly by the `create-microservice.yaml` github workflow from the go-template repository, injecting the application's name into all template files.
+    + For day-2 operations (updating the k8s config or creating a new release of the application), developers can directly commit to this repository.
 
 + **GKE + ArgoCD + Port Exporter**
     + A GKE Autopilot cluster with ArgoCD and the Port Exporter
         + ArgoCD is syncing (from the `Management Repository`) the `argocd/app-of-app.yaml` application, which deploys all other applications under `argocd/applications`.
-        + The Port Exporter detects (auto-discovery) our definition of a `Microservice` and reports it back to the Port UI. All properties (language, team etc.) and related entities (resources) can be seen (list of graph) and access via single entrypoint (the Port IDP)
+        + The Port Exporter detects (auto-discovery) our definition of a `Microservice` and reports it back to the Port UI. All properties (language, team etc.) and related entities (resources) can be seen (list or graph) and access via single entrypoint (the Port IDP)
 
 ![Screenshot](docs/port-autodiscovery.png)
