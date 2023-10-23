@@ -73,7 +73,7 @@ When triggering this action, the developer is asked to provide the service's nam
         + The self-service `create-microservice.yaml` github workflow to bootstrap a new microservice
             1. Step 1: Create a new Github Repository (the `New Microservice Repo`) and wait for the first image to be created.
             2. Step 2: Create an ArgoCD application  in the `Management Repository` (self commit) using a `default.yaml` template.
-            + *NOTE: a more declarative approach could have been used to facilitate day-2 operations. For example, we could haved deployed a CRD to deploy a new Github repository instead of imperatively creating it.*
+            + *NOTE: a more declarative/GitOps approach could have been used to facilitate day-2 operations. For example, we could haved deployed a CRD to deploy a new Github repository instead of imperatively creating it. We used an imperative pipeline for simplicity*
         + ArgoCD applications
             + The app of app is synchronizing all other apps in order to avoid having to manually apply apps
             + *NOTE: we used the same repository for simplicity, but workflows and ArgoCD apps could have been deployed in separate repositories*
