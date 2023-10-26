@@ -87,7 +87,9 @@ When triggering this action, the developer is asked to provide the service's nam
 
 + **New Microservice Repo** ([link to repo](https://github.com/CCOLLOT/coop-app-1))
     + Created on the fly by the `create-microservice.yaml` github workflow from the go-template repository, injecting the application's name into all template files.
-    + For day-2 operations (updating the k8s config or creating a new release of the application), developers can directly commit to this repository (or we could create more self-service actions in Port if needed)
+    + For day-2 operations (updating the k8s config or creating a new release of the application), developers can directly commit to this repository (or we could create more self-service actions in Port if needed).
+          + The current implementation requires 1 commit to build a new version of the application and another one to update the k8s configuration. We could have made this possible in a single commit with the following approach:
+              + on `main` only: if test / build is successful : add a commit (on current repo or dedicated one) to update the application version in the helm values.yaml file (or use something like [ArgoCD image updater](https://argocd-image-updater.readthedocs.io/en/stable/) .
 
 + **GKE + ArgoCD + Port Exporter**
     + A GKE Autopilot cluster with ArgoCD and the Port Exporter
